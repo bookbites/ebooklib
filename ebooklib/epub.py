@@ -370,73 +370,73 @@ class EpubHtml(EpubItem):
 
         return ''
 
-    def get_content(self, default=None):
-        """
-        Returns content for this document as HTML string. Content will be of type 'str' (Python 2)
-        or 'bytes' (Python 3).
+    # def get_content(self, default=None):
+    #     """
+    #     Returns content for this document as HTML string. Content will be of type 'str' (Python 2)
+    #     or 'bytes' (Python 3).
 
-        :Args:
-          - default: Default value for the content if it is not defined.
+    #     :Args:
+    #       - default: Default value for the content if it is not defined.
 
-        :Returns:
-          Returns content of this document.
-        """
+    #     :Returns:
+    #       Returns content of this document.
+    #     """
 
-        tree = parse_string(self.book.get_template(self._template_name))
-        tree_root = tree.getroot()
+    #     tree = parse_string(self.book.get_template(self._template_name))
+    #     tree_root = tree.getroot()
 
-        tree_root.set('lang', self.lang or self.book.language)
-        tree_root.attrib['{%s}lang' % NAMESPACES['XML']] = self.lang or self.book.language
+    #     tree_root.set('lang', self.lang or self.book.language)
+    #     tree_root.attrib['{%s}lang' % NAMESPACES['XML']] = self.lang or self.book.language
 
-        # add to the head also
-        #  <meta charset="utf-8" />
+    #     # add to the head also
+    #     #  <meta charset="utf-8" />
 
-        try:
-            html_tree = parse_html_string(self.content)
-        except:
-            return ''
+    #     try:
+    #         html_tree = parse_html_string(self.content)
+    #     except:
+    #         return ''
 
-        html_root = html_tree.getroottree()
+    #     html_root = html_tree.getroottree()
 
-        # create and populate head
+    #     # create and populate head
 
-        _head = etree.SubElement(tree_root, 'head')
+    #     _head = etree.SubElement(tree_root, 'head')
 
-        if self.title != '':
-            _title = etree.SubElement(_head, 'title')
-            _title.text = self.title
+    #     if self.title != '':
+    #         _title = etree.SubElement(_head, 'title')
+    #         _title.text = self.title
 
-        for lnk in self.links:
-            if lnk.get('type') == 'text/javascript':
-                _lnk = etree.SubElement(_head, 'script', lnk)
-                # force <script></script>
-                _lnk.text = ''
-            else:
-                _lnk = etree.SubElement(_head, 'link', lnk)
+    #     for lnk in self.links:
+    #         if lnk.get('type') == 'text/javascript':
+    #             _lnk = etree.SubElement(_head, 'script', lnk)
+    #             # force <script></script>
+    #             _lnk.text = ''
+    #         else:
+    #             _lnk = etree.SubElement(_head, 'link', lnk)
 
-        # this should not be like this
-        # head = html_root.find('head')
-        # if head is not None:
-        #     for i in head.getchildren():
-        #         if i.tag == 'title' and self.title != '':
-        #             continue
-        #         _head.append(i)
+    #     # this should not be like this
+    #     # head = html_root.find('head')
+    #     # if head is not None:
+    #     #     for i in head.getchildren():
+    #     #         if i.tag == 'title' and self.title != '':
+    #     #             continue
+    #     #         _head.append(i)
 
-        # create and populate body
+    #     # create and populate body
 
-        _body = etree.SubElement(tree_root, 'body')
-        if self.direction:
-            _body.set('dir', self.direction)
-            tree_root.set('dir', self.direction)
+    #     _body = etree.SubElement(tree_root, 'body')
+    #     if self.direction:
+    #         _body.set('dir', self.direction)
+    #         tree_root.set('dir', self.direction)
 
-        body = html_tree.find('body')
-        if body is not None:
-            for i in body.getchildren():
-                _body.append(i)
+    #     body = html_tree.find('body')
+    #     if body is not None:
+    #         for i in body.getchildren():
+    #             _body.append(i)
 
-        tree_str = etree.tostring(tree, pretty_print=True, encoding='utf-8', xml_declaration=True)
+    #     tree_str = etree.tostring(tree, pretty_print=True, encoding='utf-8', xml_declaration=True)
 
-        return tree_str
+    #     return tree_str
 
     def __str__(self):
         return '<EpubHtml:%s:%s>' % (self.id, self.file_name)
@@ -464,27 +464,27 @@ class EpubCoverHtml(EpubHtml):
 
         return False
 
-    def get_content(self):
-        """
-        Returns content for cover page as HTML string. Content will be of type 'str' (Python 2) or 'bytes' (Python 3).
+    # def get_content(self):
+    #     """
+    #     Returns content for cover page as HTML string. Content will be of type 'str' (Python 2) or 'bytes' (Python 3).
 
-        :Returns:
-          Returns content of this document.
-        """
+    #     :Returns:
+    #       Returns content of this document.
+    #     """
 
-        self.content = self.book.get_template('cover')
+    #     self.content = self.book.get_template('cover')
 
-        tree = parse_string(super(EpubCoverHtml, self).get_content())
-        tree_root = tree.getroot()
+    #     tree = parse_string(super(EpubCoverHtml, self).get_content())
+    #     tree_root = tree.getroot()
 
-        images = tree_root.xpath('//xhtml:img', namespaces={'xhtml': NAMESPACES['XHTML']})
+    #     images = tree_root.xpath('//xhtml:img', namespaces={'xhtml': NAMESPACES['XHTML']})
 
-        images[0].set('src', self.image_name)
-        images[0].set('alt', self.title)
+    #     images[0].set('src', self.image_name)
+    #     images[0].set('alt', self.title)
 
-        tree_str = etree.tostring(tree, pretty_print=True, encoding='utf-8', xml_declaration=True)
+    #     tree_str = etree.tostring(tree, pretty_print=True, encoding='utf-8', xml_declaration=True)
 
-        return tree_str
+    #     return tree_str
 
     def __str__(self):
         return '<EpubCoverHtml:%s:%s>' % (self.id, self.file_name)

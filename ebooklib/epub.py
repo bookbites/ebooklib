@@ -564,7 +564,7 @@ class EpubBook(object):
         self.bindings = []
 
         self.IDENTIFIER_ID = 'id'
-        self.FOLDER_NAME = 'EPUB'
+        self.FOLDER_NAME = 'OEBPS'
 
         self._id_html = 0
         self._id_image = 0
@@ -935,12 +935,12 @@ class EpubWriter(object):
 
         for ns_name, values in six.iteritems(self.book.metadata):
             if ns_name == NAMESPACES['OPF']:
-                for values in values.values():
+                for key, values in six.iteritems(values):
                     for v in values:
                         if 'property' in v[1] and v[1]['property'] == 'dcterms:modified':
                             continue
                         try:
-                            el = etree.SubElement(metadata, 'meta', v[1])
+                            el = etree.SubElement(metadata, 'link' if key == 'link' else 'meta', v[1])
                             if v[0]:
                                 el.text = v[0]
                         except ValueError:

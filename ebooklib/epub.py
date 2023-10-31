@@ -1085,7 +1085,7 @@ class EpubWriter(object):
     def _write_opf(self):
         package_attributes = {'xmlns': NAMESPACES['OPF'],
                               'unique-identifier': self.book.IDENTIFIER_ID,
-                              'version': '3.0'}
+                              'version': self.book.version or '3.0'}
         if self.book.direction and self.options['package_direction']:
             package_attributes['dir'] = self.book.direction
 

@@ -920,18 +920,22 @@ class EpubWriter(object):
         #             if ns_name == ns_url:
         #                 nsmap[n_id.lower()] = NAMESPACES[n_id]
 
+        version = self.book.version or '3.0'
+        major_version = version.split('.')[0]
+
         nsmap = {'dc': NAMESPACES['DC'], 'opf': NAMESPACES['OPF']}
         nsmap.update(self.book.namespaces)
 
         metadata = etree.SubElement(root, 'metadata', nsmap=nsmap)
 
-        el = etree.SubElement(metadata, 'meta', {'property': 'dcterms:modified'})
-        if 'mtime' in self.options:
-            mtime = self.options['mtime']
-        else:
-            import datetime
-            mtime = datetime.datetime.now()
-        el.text = mtime.strftime('%Y-%m-%dT%H:%M:%SZ')
+        if major_version == '3':
+            el = etree.SubElement(metadata, 'meta', {'property': 'dcterms:modified'})
+            if 'mtime' in self.options:
+                mtime = self.options['mtime']
+            else:
+                import datetime
+                mtime = datetime.datetime.now()
+            el.text = mtime.strftime('%Y-%m-%dT%H:%M:%SZ')
 
         for ns_name, values in six.iteritems(self.book.metadata):
             if ns_name == NAMESPACES['OPF']:
@@ -1083,15 +1087,19 @@ class EpubWriter(object):
         self.out.writestr('%s/content.opf' % self.book.FOLDER_NAME, tree_str)
 
     def _write_opf(self):
+        version = self.book.version or '3.0'
+        major_version = version.split('.')[0]
         package_attributes = {'xmlns': NAMESPACES['OPF'],
                               'unique-identifier': self.book.IDENTIFIER_ID,
-                              'version': self.book.version or '3.0'}
+                              'version': version}
         if self.book.direction and self.options['package_direction']:
             package_attributes['dir'] = self.book.direction
 
         root = etree.Element('package', package_attributes)
 
-        prefixes = ['rendition: http://www.idpf.org/vocab/rendition/#'] + self.book.prefixes
+        prefixes = self.book.prefixes
+        if major_version == '3':
+            prefixes = ['rendition: http://www.idpf.org/vocab/rendition/#'] + self.book.prefixes
         root.attrib['prefix'] = ' '.join(prefixes)
 
         # METADATA

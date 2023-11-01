@@ -1098,7 +1098,7 @@ class EpubWriter(object):
         root = etree.Element('package', package_attributes)
 
         if major_version == '3':
-            prefixes = ['rendition: http://www.idpf.org/vocab/rendition/#'] + self.book.prefixes
+            prefixes = ['rendition: http://www.idpf.org/vocab/rendition/#', 'ibooks: http://vocabulary.itunes.apple.com/rdf/ibooks/vocabulary-extensions-1.0/'] + self.book.prefixes
             root.attrib['prefix'] = ' '.join(prefixes)
 
         # METADATA

@@ -1397,12 +1397,6 @@ class EpubReader(object):
         if options:
             self.options.update(options)
 
-        self._check_deprecated()
-
-    def _check_deprecated(self):
-        if not self.options.get('ignore_ncx'):
-            warnings.warn('In the future version we will turn default option ignore_ncx to True.')
-
     def process(self):
         # should cache this html parsing so we don't do it for every plugin
         for plg in self.options.get('plugins', []):

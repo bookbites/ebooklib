@@ -1009,7 +1009,8 @@ class EpubWriter(object):
         return _ncx_id
 
     def _write_opf_spine(self, root, ncx_id):
-        spine_attributes = {'toc': ncx_id or 'ncx'}
+        containsNcx = any(isinstance(item, EpubNcx) for item in self.book.items)
+        spine_attributes = {'toc': ncx_id or 'ncx'} if containsNcx else {}
         if self.book.direction and self.options['spine_direction']:
             spine_attributes['page-progression-direction'] = self.book.direction
 

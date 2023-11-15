@@ -58,6 +58,8 @@ CONTAINER_XML = '''<?xml version="1.0" encoding="utf-8"?>
 </container>
 '''
 
+ENCRYPTION_PATH = 'META-INF/encryption.xml'
+
 NCX_XML = six.b('''<!DOCTYPE ncx PUBLIC "-//NISO//DTD ncx 2005-1//EN" "http://www.daisy.org/z3986/2005/ncx-2005-1.dtd">
 <ncx xmlns="http://www.daisy.org/z3986/2005/ncx/" version="2005-1" />''')
 
@@ -562,6 +564,7 @@ class EpubBook(object):
         self.pages = []
         self.toc = []
         self.bindings = []
+        self.encryption = None
 
         self.IDENTIFIER_ID = 'id'
         self.FOLDER_NAME = 'OEBPS'
@@ -910,6 +913,8 @@ class EpubWriter(object):
     def _write_container(self):
         container_xml = CONTAINER_XML % {'folder_name': self.book.FOLDER_NAME}
         self.out.writestr(CONTAINER_PATH, container_xml)
+        if self.book.encryption:
+            self.out.writestr(ENCRYPTION_PATH, self.book.encryption)
 
     def _write_opf_metadata(self, root):
         # This is really not needed
@@ -1422,6 +1427,13 @@ class EpubReader(object):
 
     def _load_container(self):
         meta_inf = self.read_file('META-INF/container.xml')
+
+        try:
+            encryption_file_content = self.read_file('META-INF/encryption.xml')
+            self.book.encryption = (encryption_file_content.decode('utf-8') if isinstance(encryption_file_content, bytes) else encryption_file_content)
+        except:
+            self.book.encryption = None
+
         tree = parse_string(meta_inf)
 
         for root_file in tree.findall('//xmlns:rootfile[@media-type]', namespaces={'xmlns': NAMESPACES['CONTAINERNS']}):
